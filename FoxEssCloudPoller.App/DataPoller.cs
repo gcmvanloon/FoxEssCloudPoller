@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -10,12 +11,13 @@ using Timer = System.Threading.Timer;
 
 namespace FoxEssCloudPoller
 {
-    public class DataPoller
+    public class DataPoller : IHostedService
     {
         private FoxEssCloudClient _client;
         private IHandleNewInverterMeasurements _handler;
         private ILogger<DataPoller> _logger;
         private DateTime _processedUntil;
+        private Timer? _timer;
 
         public DataPoller(FoxEssCloudClient client, IHandleNewInverterMeasurements handler, ILogger<DataPoller> logger)
         {
@@ -27,16 +29,28 @@ namespace FoxEssCloudPoller
             _processedUntil = DateTime.Now.AddMinutes(-5);
         }
 
-        public void Run(int intervalInMinutes)
+        public Task StartAsync(CancellationToken cancellationToken)
         {
+            _logger.LogInformation("FoxEssCloudPoller starting...");
+
             TimerCallback callback = TimerCallbackMethod;
-            Timer timer = new Timer(callback, null, TimeSpan.Zero, TimeSpan.FromMinutes(intervalInMinutes));
+            _timer = new Timer(callback, null, TimeSpan.Zero, TimeSpan.FromMinutes(5));
 
-            _logger.LogInformation("Timer started. Press any key to exit.");
-            Console.ReadKey();
+            _logger.LogInformation("Timer started. Press Ctrl-C to exit.");
 
-            timer.Dispose();
+            return Task.CompletedTask;
         }
+
+        public Task StopAsync(CancellationToken cancellationToken)
+        {
+            _timer.Dispose();
+            _logger.LogInformation("Timer stopped.");
+            _logger.LogInformation("FoxEssCloudPoller stopped gracefully.");
+
+            return Task.CompletedTask;
+        }
+
+
 
         private void TimerCallbackMethod(object? state)
         {

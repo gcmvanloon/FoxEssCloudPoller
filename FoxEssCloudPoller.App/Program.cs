@@ -8,22 +8,8 @@ using System.Globalization;
 
 CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
 
-using var host = CreateHostBuilder(args).Build();
-ILogger<Program> logger = host.Services.GetRequiredService<ILogger<Program>>();
-try
-{
-    logger.LogInformation("FoxEssCloudPoller starting...");
-    logger.LogInformation($"Host EnvironmentName '{host.Services.GetRequiredService<IHostEnvironment>().EnvironmentName}'");
-
-    host.Services.GetRequiredService<DataPoller>().Run(5);
-
-    logger.LogInformation("FoxEssCloudPoller stopped gracefully.");
-}
-catch (Exception ex)
-{
-    logger.LogError(ex, "An unhandled exception occurred.");
-}
-
+//run the DataPoller IHostedService implementation...
+await CreateHostBuilder(args).RunConsoleAsync();
 
 
 static IHostBuilder CreateHostBuilder(string[] args) => Host.CreateDefaultBuilder(args)
@@ -34,6 +20,7 @@ static IHostBuilder CreateHostBuilder(string[] args) => Host.CreateDefaultBuilde
         services.AddSingleton<PVOutputClient>();
         services.AddTransient<DataPoller>();
         services.AddTransient<IHandleNewInverterMeasurements, SendMeasurmentsToPVOutputHandler>();
+        services.AddTransient<IHostedService, DataPoller>();
 
     })
     .ConfigureAppConfiguration((context, configurationBuilder) =>
