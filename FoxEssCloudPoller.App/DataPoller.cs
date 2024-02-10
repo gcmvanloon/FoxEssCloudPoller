@@ -1,12 +1,6 @@
 ﻿using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Timers;
+using System.Text.Json;
 using Timer = System.Threading.Timer;
 
 namespace FoxEssCloudPoller
@@ -49,8 +43,6 @@ namespace FoxEssCloudPoller
 
             return Task.CompletedTask;
         }
-
-
 
         private void TimerCallbackMethod(object? state)
         {
@@ -102,6 +94,15 @@ namespace FoxEssCloudPoller
                     P3Volt = newValues[FoxEssVariables.PV3Volt].data[i].value,
                     P4Volt = newValues[FoxEssVariables.PV4Volt].data[i].value,
                 };
+
+                if (_logger.IsEnabled(LogLevel.Trace))
+                {
+                    var options = new JsonSerializerOptions
+                    {
+                        WriteIndented = true
+                    };
+                    _logger.LogTrace($"Final measurements that are passed down to the handler (e.g. sent to PVOutput):{Environment.NewLine}Measurements: {JsonSerializer.Serialize(measurements, options)}");
+                }
 
                 _handler.Handle(measurements);
                 _processedUntil = measurements.Timestamp;

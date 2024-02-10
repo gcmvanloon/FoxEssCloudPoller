@@ -13,11 +13,13 @@ namespace FoxEssCloudPoller
 
         private readonly string _apiKey;
         private readonly int _systemId;
+        private readonly bool _dryRun;
 
         public PVOutputClient(IConfiguration configuration, ILogger<PVOutputClient> logger)
         {
             _apiKey = configuration.GetValue<string>("PVOutput:ApiKey");
             _systemId = configuration.GetValue<int>("PVOutput:SystemId");
+            _dryRun = configuration.GetValue<bool?>("PVOutput:DryRun") ?? false;
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
@@ -44,13 +46,20 @@ namespace FoxEssCloudPoller
                 UriBuilder uriBuilder = new UriBuilder("https://pvoutput.org/service/r2/addstatus.jsp");
                 uriBuilder.Query = queryString;
 
-                _logger.LogInformation("Posting data to PVOutput.org...");
-                _logger.LogDebug(uriBuilder.ToString());
-                var response = await client.PostAsync(uriBuilder.Uri, content);
-
-                if (!response.IsSuccessStatusCode)
+                if (!_dryRun)
                 {
-                    throw new Exception($"Unexpected HTTP StatusCode {response.StatusCode} from PVOutput received.");
+                    _logger.LogInformation("Posting data to PVOutput.org...");
+                    _logger.LogDebug(uriBuilder.ToString());
+                    var response = await client.PostAsync(uriBuilder.Uri, content);
+
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        throw new Exception($"Unexpected HTTP StatusCode {response.StatusCode} from PVOutput received.");
+                    }
+                }
+                else
+                {
+                    _logger.LogInformation($"DryRun mode is enabled. Not posting data to PVOutput.org.{Environment.NewLine}{uriBuilder.Uri}");
                 }
             }
         }

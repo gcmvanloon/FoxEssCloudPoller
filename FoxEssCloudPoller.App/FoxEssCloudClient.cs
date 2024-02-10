@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using System.Net.Http.Json;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.Json;
 
 namespace FoxEssCloudPoller
 {
@@ -82,6 +83,16 @@ namespace FoxEssCloudPoller
                     // Read the response content
                     var responseContent = await response.Content.ReadFromJsonAsync<RawResponse>();
                     _logger.LogDebug("Received response from foxesscloud.com succesfully.");
+
+                    if (_logger.IsEnabled(LogLevel.Trace))
+                    {
+                        var options = new JsonSerializerOptions
+                        {
+                            WriteIndented = true
+                        };
+                        _logger.LogTrace($"Response: {JsonSerializer.Serialize(responseContent, options)}");
+                    }
+
                     if (responseContent.errno != 0)
                     {
                         throw responseContent.errno switch
@@ -102,7 +113,6 @@ namespace FoxEssCloudPoller
             }
         }
 
-
         private async Task GetTokenAsync()
         {
             using (HttpClient client = new HttpClient())
@@ -115,7 +125,7 @@ namespace FoxEssCloudPoller
                 {
                     // Read the response content
                     var responseContent = await response.Content.ReadFromJsonAsync<LoginResponse>();
-                    if(responseContent.errno != 0)
+                    if (responseContent.errno != 0)
                     {
                         throw responseContent.errno switch
                         {
