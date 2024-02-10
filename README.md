@@ -55,7 +55,8 @@ The configuration in appsettings.json can be overwritten using environment varia
 ```
 docker run --env FoxEssCloud__User=JohnnyB --env FoxEssCloud__Password="Welcome123" --env FoxEssCloud__InverterId=9826eabd-79d5-4bbf-bd1f-0424da73e639 --env PVOutput__ApiKey=4d74f723727c4c0857daaa464b0772b240d8a615 --env PVOutput__SystemId=12345 -d foxesscloudpoller:dev
 ```
-
+### Prebuild image on Docker Hub
+I maintain a [pre-build docker image](https://hub.docker.com/r/gcmvanloon/foxesscloud-poller) on docker hub for anyone to use.
 
 ## What is next?
 The PVOutput forwarder is a first implementation of the `IHandleNewInverterMeasurements` interface.
