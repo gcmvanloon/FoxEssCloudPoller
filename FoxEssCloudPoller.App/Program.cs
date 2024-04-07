@@ -5,23 +5,20 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System.Globalization;
 
-
 CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
 
 //run the DataPoller IHostedService implementation...
 await CreateHostBuilder(args).RunConsoleAsync();
 
-
 static IHostBuilder CreateHostBuilder(string[] args) => Host.CreateDefaultBuilder(args)
     .ConfigureServices((context, services) =>
     {
         var configuration = context.Configuration;
-        services.AddSingleton<FoxEssCloudClient>();
+        services.AddSingleton<FoxEssOpenApiClient>();
         services.AddSingleton<PVOutputClient>();
         services.AddTransient<DataPoller>();
         services.AddTransient<IHandleNewInverterMeasurements, SendMeasurmentsToPVOutputHandler>();
         services.AddTransient<IHostedService, DataPoller>();
-
     })
     .ConfigureAppConfiguration((context, configurationBuilder) =>
     {
