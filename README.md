@@ -43,6 +43,7 @@ converted from kilo Watt to Watt.
 
 ## Docker
 It is possible to run the FoxEssCloudPoller application in a container on a home server like a NAS.
+There is a [pre-build container image available on docker hub](https://hub.docker.com/r/gcmvanloon/foxesscloud-poller).
 
 ### docker build
 to build the container: `docker build . --tag foxesscloudpoller:latest`
