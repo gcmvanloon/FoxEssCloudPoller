@@ -68,8 +68,8 @@ namespace FoxEssCloudPoller
             var measurements = new InverterMeasurements
             {
                 Timestamp = result.Time.ToDateTime(),
-                GeneratedPower = result.Datas.Find(d => d.Variable == FoxEssVariables.PVPower).Value * 1000, //convert from kW to W
-                InverterTemperature = (int)Math.Round(result.Datas.Find(d => d.Variable == FoxEssVariables.AmbiantTemperation).Value),
+                GeneratedPower = result.Datas.Find(d => d.Variable == FoxEssVariables.GenerationPower).Value * 1000, //convert from kW to W
+                InverterTemperature = (int)Math.Round(result.Datas.Find(d => d.Variable == FoxEssVariables.InvTemperation).Value),
                 P1Volt = result.Datas.Find(d => d.Variable == FoxEssVariables.PV1Volt).Value,
                 P2Volt = result.Datas.Find(d => d.Variable == FoxEssVariables.PV2Volt).Value,
                 P3Volt = result.Datas.Find(d => d.Variable == FoxEssVariables.PV3Volt).Value,

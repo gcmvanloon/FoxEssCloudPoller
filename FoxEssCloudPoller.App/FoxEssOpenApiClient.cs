@@ -36,8 +36,8 @@ namespace FoxEssCloudPoller
                 {
                     sn = _deviceSerialNr,
                     variables = new string[] {
-                        FoxEssVariables.PVPower,
-                        FoxEssVariables.AmbiantTemperation,
+                        FoxEssVariables.GenerationPower,
+                        FoxEssVariables.InvTemperation,
                         FoxEssVariables.PV1Volt,
                         FoxEssVariables.PV2Volt,
                         FoxEssVariables.PV3Volt,
